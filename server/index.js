@@ -25,7 +25,7 @@ app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
@@ -48,4 +48,9 @@ app.use((err, req, res, next) => {
   return res.status(statusCode).json({ success: false, statusCode, message });
 });
 
-app.listen(5000, () => console.log("Server running on port: 5000"));
+// Local dev only — Vercel uses the exported app as a serverless function
+if (process.env.NODE_ENV !== "production") {
+  app.listen(5000, () => console.log("Server running on port: 5000"));
+}
+
+export default app;
